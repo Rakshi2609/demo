@@ -44,15 +44,9 @@ export function BookingForm({
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Auto-select first available slot if not selected
+  // Auto-select first available slot
   useEffect(() => {
-    if (!selectedSlot) {
-      const firstAvailable = TIME_SLOTS.find((s) => !bookedSlots.includes(s.label));
-      if (firstAvailable) {
-        setSelectedSlot(firstAvailable.label);
-      }
-    } else if (bookedSlots.includes(selectedSlot)) {
-      // If the currently selected slot becomes booked on date change
+    if (!selectedSlot || bookedSlots.includes(selectedSlot)) {
       const firstAvailable = TIME_SLOTS.find((s) => !bookedSlots.includes(s.label));
       if (firstAvailable) {
         setSelectedSlot(firstAvailable.label);
@@ -70,8 +64,8 @@ export function BookingForm({
   // Handle clicking on an occupied slot directly
   const handleSlotConflictClick = (slotLabel: string) => {
     toast.error('This slot is not available', {
-      description: `The time slot "${slotLabel}" for ${currentCab.name} on ${selectedDate} is already reserved. Please select another slot.`,
-      duration: 4000,
+      description: `The time slot "${slotLabel}" on ${selectedDate} is already reserved. Please select another slot.`,
+      duration: 4500,
     });
   };
 
@@ -79,8 +73,8 @@ export function BookingForm({
   const handleSimulateConflict = () => {
     const bookedExample = bookedSlots[0] || '09:00 AM - 10:00 AM';
     toast.error('This slot is not available', {
-      description: `[Demo Test] The time slot "${bookedExample}" is occupied by another scheduled driver. Please select an available slot.`,
-      duration: 4500,
+      description: `[Demo Test] The time slot "${bookedExample}" on ${selectedDate} is already booked. Please choose an alternate time.`,
+      duration: 5000,
     });
   };
 
@@ -104,7 +98,8 @@ export function BookingForm({
     // Client-side quick check
     if (bookedSlots.includes(selectedSlot)) {
       toast.error('This slot is not available', {
-        description: `The slot ${selectedSlot} has just been reserved. Please pick another one.`,
+        description: `The time slot "${selectedSlot}" on ${selectedDate} is already booked. Please choose an alternate slot.`,
+        duration: 5000,
       });
       return;
     }
@@ -128,28 +123,33 @@ export function BookingForm({
         }),
       });
 
-      const data = await response.json();
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch (parseErr) {
+        console.warn('JSON parse warning:', parseErr);
+        data = { success: false, error: 'Response parsing issue' };
+      }
 
       if (response.status === 409 || !data.success) {
-        // Trigger the exact requested toast
         toast.error('This slot is not available', {
           description:
             data.error ||
-            `The slot "${selectedSlot}" is no longer available. Please select another time.`,
+            `The slot "${selectedSlot}" on ${selectedDate} is already reserved. Please pick another one.`,
           duration: 5000,
         });
         return;
       }
 
       toast.success('Ride Scheduled Successfully!', {
-        description: `Your ${currentCab.name} is booked for ${selectedDate} at ${selectedSlot}.`,
+        description: `Your ${currentCab.name} is confirmed for ${selectedDate} at ${selectedSlot}.`,
       });
 
       onBookingCreated();
     } catch (error) {
       console.error('Submission failed:', error);
-      toast.error('Booking failed', {
-        description: 'Could not communicate with the scheduling server.',
+      toast.error('Booking Error', {
+        description: 'Failed to submit booking. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -372,7 +372,7 @@ export function BookingForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full relative flex items-center justify-center gap-2 rounded-xl bg-slate-950 py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-slate-800 active:scale-[0.99] transition-all disabled:opacity-50"
+          className="w-full relative flex items-center justify-center gap-2 rounded-xl bg-slate-950 py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-slate-800 active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? (
             <span>Checking slot availability...</span>

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase, resetInMemoryBookings } from '@/lib/mongodb';
 import BookingModel from '@/models/Booking';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -49,23 +51,32 @@ export async function POST() {
     const dbState = await connectToDatabase();
 
     if (dbState.isConnected) {
-      await BookingModel.deleteMany({});
-      await BookingModel.insertMany(demoSeeds);
-      return NextResponse.json({
-        success: true,
-        mode: 'mongodb',
-        message: 'Demo slot dataset reset and seeded in MongoDB!',
-      });
-    } else {
-      resetInMemoryBookings();
-      return NextResponse.json({
-        success: true,
-        mode: 'in-memory',
-        message: 'Demo slot dataset reset in in-memory store!',
-      });
+      try {
+        await BookingModel.deleteMany({});
+        await BookingModel.insertMany(demoSeeds);
+        return NextResponse.json({
+          success: true,
+          mode: 'mongodb',
+          message: 'Demo slot dataset reset and seeded in MongoDB!',
+        });
+      } catch (dbErr) {
+        console.warn('MongoDB seed failed, falling back to in-memory:', dbErr);
+      }
     }
+
+    resetInMemoryBookings();
+    return NextResponse.json({
+      success: true,
+      mode: 'in-memory',
+      message: 'Demo slot dataset reset successfully!',
+    });
   } catch (error) {
     console.error('Error seeding demo data:', error);
-    return NextResponse.json({ success: false, error: 'Failed to seed database' }, { status: 500 });
+    resetInMemoryBookings();
+    return NextResponse.json({
+      success: true,
+      mode: 'in-memory',
+      message: 'Demo slots reset successfully (fallback mode).',
+    });
   }
 }

@@ -21,7 +21,6 @@ if (!global.mongooseCache) {
   global.mongooseCache = cached;
 }
 
-// In-memory fallback dataset for smooth instant demo without mandatory external Mongo setup
 const todayStr = new Date().toISOString().split('T')[0];
 const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
@@ -75,17 +74,20 @@ if (!global.inMemoryBookings) {
 }
 
 export async function connectToDatabase() {
-  if (!MONGODB_URI) {
+  if (!MONGODB_URI || !MONGODB_URI.startsWith('mongodb')) {
     return { isConnected: false, mode: 'in-memory' as const };
   }
 
-  if (cached.conn) {
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return { isConnected: true, mode: 'mongodb' as const, connection: cached.conn };
   }
 
   if (!cached.promise) {
-    const opts = {
+    const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 2500,
+      connectTimeoutMS: 2500,
+      socketTimeoutMS: 4000,
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
       return mongooseInstance;
@@ -94,10 +96,14 @@ export async function connectToDatabase() {
 
   try {
     cached.conn = await cached.promise;
-    return { isConnected: true, mode: 'mongodb' as const, connection: cached.conn };
+    if (mongoose.connection.readyState === 1) {
+      return { isConnected: true, mode: 'mongodb' as const, connection: cached.conn };
+    }
+    return { isConnected: false, mode: 'in-memory' as const };
   } catch (error) {
     cached.promise = null;
-    console.warn('MongoDB connection failed, falling back to persistent memory mode for demo:', error);
+    cached.conn = null;
+    console.warn('MongoDB connection failed, using in-memory store:', error);
     return { isConnected: false, mode: 'in-memory' as const, error };
   }
 }
@@ -125,6 +131,49 @@ export function deleteInMemoryBooking(id: string): boolean {
 }
 
 export function resetInMemoryBookings(): Booking[] {
-  global.inMemoryBookings = [...defaultSeedBookings];
+  global.inMemoryBookings = [
+    {
+      _id: `demo-${Date.now()}-1`,
+      passengerName: 'Sarah Jenkins',
+      passengerPhone: '+1 (555) 234-5678',
+      pickupLocation: 'International Airport - Terminal 2',
+      dropoffLocation: 'Downtown Central Plaza & Metro',
+      rideType: 'economy',
+      date: new Date().toISOString().split('T')[0],
+      timeSlot: '09:00 AM - 10:00 AM',
+      price: 24.50,
+      status: 'confirmed',
+      notes: 'Flight landing at Gate 12, carrying 2 bags',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      _id: `demo-${Date.now()}-2`,
+      passengerName: 'Marcus Vance',
+      passengerPhone: '+1 (555) 876-5432',
+      pickupLocation: 'Silicon Tech Park - Gate 4',
+      dropoffLocation: 'Grand Central Railway Station',
+      rideType: 'premium',
+      date: new Date().toISOString().split('T')[0],
+      timeSlot: '05:00 PM - 06:00 PM',
+      price: 58.00,
+      status: 'confirmed',
+      notes: 'Executive client meeting',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      _id: `demo-${Date.now()}-3`,
+      passengerName: 'Elena Rostova',
+      passengerPhone: '+1 (555) 345-9871',
+      pickupLocation: 'Bayview Marina & Financial Tower',
+      dropoffLocation: 'North Medical Center',
+      rideType: 'ev',
+      date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      timeSlot: '08:00 AM - 09:00 AM',
+      price: 29.00,
+      status: 'confirmed',
+      notes: 'Quiet eco commute',
+      createdAt: new Date().toISOString(),
+    },
+  ];
   return global.inMemoryBookings;
 }
