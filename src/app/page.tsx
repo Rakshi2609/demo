@@ -31,11 +31,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isResetting, setIsResetting] = useState(false);
 
-  // Fetch bookings and availability for the selected date & rideType
-  const fetchBookingsData = useCallback(async () => {
+  // Fetch bookings and availability for the selected date
+  const fetchBookingsData = useCallback(async (isBackground = false) => {
     try {
-      setIsLoading(true);
-      const res = await fetch(`/api/bookings?date=${selectedDate}&rideType=${selectedRideType}`);
+      if (!isBackground) setIsLoading(true);
+      const res = await fetch(`/api/bookings?date=${selectedDate}`);
       const data = await res.json();
 
       if (data.success) {
@@ -45,16 +45,24 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Failed to load bookings:', error);
-      toast.error('Network Error', {
-        description: 'Failed to synchronize bookings from database.',
-      });
+      if (!isBackground) {
+        toast.error('Network Error', {
+          description: 'Failed to synchronize bookings from database.',
+        });
+      }
     } finally {
-      setIsLoading(false);
+      if (!isBackground) setIsLoading(false);
     }
-  }, [selectedDate, selectedRideType]);
+  }, [selectedDate]);
 
+  // Initial fetch and auto-polling every 2.5s for real-time multi-user synchronization
   useEffect(() => {
     fetchBookingsData();
+    const interval = setInterval(() => {
+      fetchBookingsData(true);
+    }, 2500);
+
+    return () => clearInterval(interval);
   }, [fetchBookingsData]);
 
   // Reset/Seed demo data

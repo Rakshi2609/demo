@@ -7,20 +7,19 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date');
-    const rideType = searchParams.get('rideType');
 
     const dbState = await connectToDatabase();
 
     if (dbState.isConnected) {
       const filter: Record<string, unknown> = { status: 'confirmed' };
       if (date) filter.date = date;
-      if (rideType) filter.rideType = rideType;
 
-      const bookings = await BookingModel.find(filter).sort({ createdAt: -1 }).lean();
-      const bookedSlots = bookings.map((b) => b.timeSlot);
+      // Find all confirmed bookings for this date (across all vehicles)
+      const confirmedBookingsForDate = await BookingModel.find(filter).lean();
+      const bookedSlots = Array.from(new Set(confirmedBookingsForDate.map((b) => b.timeSlot)));
 
-      // Also get all bookings for list view
-      const allBookings = await BookingModel.find().sort({ createdAt: -1 }).limit(20).lean();
+      // Get all recent bookings for dashboard
+      const allBookings = await BookingModel.find().sort({ createdAt: -1 }).limit(30).lean();
 
       return NextResponse.json({
         success: true,
@@ -34,11 +33,10 @@ export async function GET(request: NextRequest) {
       const filtered = allBookings.filter((b) => {
         if (b.status !== 'confirmed') return false;
         if (date && b.date !== date) return false;
-        if (rideType && b.rideType !== rideType) return false;
         return true;
       });
 
-      const bookedSlots = filtered.map((b) => b.timeSlot);
+      const bookedSlots = Array.from(new Set(filtered.map((b) => b.timeSlot)));
 
       return NextResponse.json({
         success: true,
@@ -82,11 +80,10 @@ export async function POST(request: NextRequest) {
     const dbState = await connectToDatabase();
 
     if (dbState.isConnected) {
-      // Check MongoDB for existing slot conflict
+      // Check MongoDB for ANY confirmed booking on that date & timeSlot
       const existing = await BookingModel.findOne({
         date,
         timeSlot,
-        rideType,
         status: 'confirmed',
       });
 
@@ -94,7 +91,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: 'This slot is not available. Please choose another time slot or vehicle category.',
+            error: `This slot is not available. The time slot "${timeSlot}" on ${date} is already booked by ${existing.passengerName}.`,
             isSlotUnavailable: true,
           },
           { status: 409 }
@@ -124,13 +121,12 @@ export async function POST(request: NextRequest) {
         { status: 201 }
       );
     } else {
-      // In-memory slot conflict check
+      // In-memory slot conflict check: check ANY confirmed booking on this date & timeSlot
       const currentBookings = getInMemoryBookings();
       const conflict = currentBookings.find(
         (b) =>
           b.date === date &&
           b.timeSlot === timeSlot &&
-          b.rideType === rideType &&
           b.status === 'confirmed'
       );
 
@@ -138,7 +134,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: 'This slot is not available. Please choose another time slot or vehicle category.',
+            error: `This slot is not available. The time slot "${timeSlot}" on ${date} is already booked by ${conflict.passengerName}.`,
             isSlotUnavailable: true,
           },
           { status: 409 }
