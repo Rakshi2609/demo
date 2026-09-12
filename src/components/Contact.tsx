@@ -26,97 +26,102 @@ export default function Contact() {
           subtitle="Drop by, call, or message us on WhatsApp — we'd love to welcome you."
         />
 
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Info */}
-          <Reveal className="space-y-6">
-            <InfoRow icon={<MapPin className="h-5 w-5" />} title="Address">
-              <p>{fullAddress()}</p>
-              <p className="mt-1 text-sm text-gold">{salon.branchNote}</p>
-            </InfoRow>
+        <Reveal className="mt-12 overflow-hidden rounded-3xl border border-line shadow-xl shadow-black/5">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Info panel (dark, premium) */}
+            <div className="flex flex-col gap-7 bg-ink p-8 text-cream md:p-10">
+              <InfoRow icon={<MapPin className="h-5 w-5" />} title="Address">
+                <p className="text-cream/80">{fullAddress()}</p>
+                <p className="mt-1 text-sm font-medium text-gold-soft">
+                  {salon.branchNote}
+                </p>
+              </InfoRow>
 
-            <InfoRow icon={<Phone className="h-5 w-5" />} title="Phone">
-              <a href={telLink()} className="hover:text-gold">
-                {prettyPhone(salon.phonePrimary)}
-              </a>
-              <br />
-              <a href={telLink(salon.phoneSecondary)} className="hover:text-gold">
-                {prettyPhone(salon.phoneSecondary)}
-              </a>
-            </InfoRow>
+              <InfoRow icon={<Phone className="h-5 w-5" />} title="Phone">
+                <a href={telLink()} className="text-cream/80 hover:text-gold-soft">
+                  {prettyPhone(salon.phonePrimary)}
+                </a>
+                <span className="mx-2 text-cream/30">·</span>
+                <a
+                  href={telLink(salon.phoneSecondary)}
+                  className="text-cream/80 hover:text-gold-soft"
+                >
+                  {prettyPhone(salon.phoneSecondary)}
+                </a>
+              </InfoRow>
 
-            <InfoRow icon={<Clock className="h-5 w-5" />} title="Opening hours">
-              <ul className="space-y-1 text-sm">
-                {salon.hours.map((h) => (
-                  <li key={h.day} className="flex justify-between gap-6">
-                    <span className="text-muted">{h.day}</span>
-                    <span className="font-medium text-ink">
-                      {h.open} – {h.close}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </InfoRow>
+              <InfoRow icon={<Clock className="h-5 w-5" />} title="Opening hours">
+                <ul className="mt-1 space-y-1 text-sm">
+                  {salon.hours.map((h) => (
+                    <li key={h.day} className="flex justify-between gap-6">
+                      <span className="text-cream/50">{h.day}</span>
+                      <span className="font-medium text-cream/90">
+                        {h.open} – {h.close}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </InfoRow>
 
-            <InfoRow icon={<Instagram className="h-5 w-5" />} title="Instagram">
-              <a
-                href={salon.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold"
-              >
-                {salon.instagramHandle}
-              </a>
-            </InfoRow>
+              <InfoRow icon={<Instagram className="h-5 w-5" />} title="Instagram">
+                <a
+                  href={salon.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cream/80 hover:text-gold-soft"
+                >
+                  {salon.instagramHandle}
+                </a>
+              </InfoRow>
 
-            {/* Action buttons */}
-            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
-              <a
-                href={directionsLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-3 text-sm font-semibold text-cream transition hover:bg-gold"
-              >
-                <Navigation className="h-4 w-4" /> Directions
-              </a>
-              <a
-                href={telLink()}
-                className="flex items-center justify-center gap-2 rounded-full border border-ink/20 px-4 py-3 text-sm font-semibold text-ink transition hover:border-gold hover:text-gold"
-              >
-                <Phone className="h-4 w-4" /> Call Now
-              </a>
-              <a
-                href={whatsappLink(bookingWhatsappMessage())}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1eb457]"
-              >
-                <MessageCircle className="h-4 w-4" fill="white" strokeWidth={0} /> WhatsApp
-              </a>
+              {/* Action buttons */}
+              <div className="mt-1 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <a
+                  href={directionsLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-full bg-gold px-4 py-3 text-sm font-semibold text-cream transition hover:bg-gold-soft hover:text-ink"
+                >
+                  <Navigation className="h-4 w-4" /> Directions
+                </a>
+                <a
+                  href={telLink()}
+                  className="flex items-center justify-center gap-2 rounded-full border border-cream/25 px-4 py-3 text-sm font-semibold text-cream transition hover:bg-cream/10"
+                >
+                  <Phone className="h-4 w-4" /> Call Now
+                </a>
+                <a
+                  href={whatsappLink(bookingWhatsappMessage())}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1eb457]"
+                >
+                  <MessageCircle className="h-4 w-4" fill="white" strokeWidth={0} /> WhatsApp
+                </a>
+              </div>
             </div>
-          </Reveal>
 
-          {/* Map */}
-          <Reveal delay={100}>
-            <div className="h-full min-h-[340px] overflow-hidden rounded-2xl border border-line shadow-sm">
+            {/* Map */}
+            <div className="relative min-h-[360px] lg:min-h-full">
               <iframe
                 title={`Map to ${salon.legalName}`}
                 src={mapEmbed}
-                className="h-full min-h-[340px] w-full"
+                className="absolute inset-0 h-full w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
               />
+              <a
+                href={mapsLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute bottom-4 right-4 rounded-full bg-cream px-4 py-2 text-sm font-semibold text-ink shadow-lg transition hover:bg-white"
+              >
+                Open in Google Maps →
+              </a>
             </div>
-            <a
-              href={mapsLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 inline-block text-sm font-medium text-gold hover:underline"
-            >
-              Open in Google Maps →
-            </a>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -133,12 +138,12 @@ function InfoRow({
 }) {
   return (
     <div className="flex gap-4">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/12 text-gold">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-soft">
         {icon}
       </span>
-      <div>
-        <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
-        <div className="mt-1 text-ink-soft">{children}</div>
+      <div className="min-w-0">
+        <h3 className="font-display text-lg font-semibold text-cream">{title}</h3>
+        <div className="mt-1">{children}</div>
       </div>
     </div>
   );
