@@ -15,8 +15,8 @@ export default function Hero() {
         className="object-cover object-center"
       />
       {/* Overlays for legible text */}
-      <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/60 to-ink/25" />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-ink/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-ink/92 via-ink/70 to-ink/35" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-ink/40" />
 
       <div className="container-x relative z-10 py-28 md:py-32">
         <div className="max-w-2xl">
@@ -88,6 +88,18 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Scroll cue */}
+      <a
+        href="#services"
+        aria-label="Scroll to services"
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-cream/60 transition-colors hover:text-cream md:flex"
+      >
+        <span className="text-[0.6rem] uppercase tracking-[0.25em]">Scroll</span>
+        <span className="flex h-9 w-5 items-start justify-center rounded-full border border-cream/40 p-1">
+          <span className="h-1.5 w-1 animate-bounce rounded-full bg-cream/70" />
+        </span>
+      </a>
     </section>
   );
 }
