@@ -1,28 +1,128 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Design tokens — premium Indian unisex salon.
+   Change the palette here and it propagates across the whole site.
+   ========================================================================== */
+@theme {
+  /* Colours */
+  --color-cream: #faf6f0; /* page background (warm ivory) */
+  --color-cream-2: #f3ebdf; /* soft section background */
+  --color-ink: #1b1512; /* near-black warm, primary text/dark surfaces */
+  --color-ink-soft: #3b322c; /* secondary dark */
+  --color-muted: #7c7066; /* muted body text */
+  --color-gold: #b0803f; /* brand accent */
+  --color-gold-soft: #d8b981; /* light accent / hovers */
+  --color-line: #e6ddce; /* hairline borders */
+
+  /* Fonts (wired to next/font variables in layout.tsx) */
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Radii */
+  --radius-xl2: 1.5rem;
+}
+
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* offset sticky header when jumping to sections */
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Custom subtle scrollbar */
+/* Respect reduced-motion for all animation */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+  background: var(--color-line);
+  border-radius: 8px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+
+/* Utility: content container */
+.container-x {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* Eyebrow / kicker label */
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.kicker::before {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: var(--color-gold);
+  display: inline-block;
+}
+
+/* Entrance animation, applied progressively via IntersectionObserver */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Gold gradient text accent */
+.text-gold-gradient {
+  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Focus visibility for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

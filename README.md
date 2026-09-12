@@ -1,91 +1,60 @@
-# CabGlide — Minimalist Cab Scheduling Application 🚖
+# Quality Beauty Salon & Academy — Website Demo
 
-A modern, light-themed cab scheduling and reservation platform built with **Next.js (App Router)**, **MongoDB / Mongoose**, **Tailwind CSS**, and **Sonner**.
+A polished, mobile-first marketing site for **Quality Beauty Salon & Academy**, a
+premium unisex salon in Pandri, Raipur. Built with Next.js 15 (App Router),
+React 19 and Tailwind CSS v4. No database required — bookings convert straight
+to WhatsApp.
 
-![Theme](https://img.shields.io/badge/Theme-Minimalist%20Light-amber500)
-![Framework](https://img.shields.io/badge/Next.js-16.3-black)
-![Database](https://img.shields.io/badge/Database-MongoDB%20%2F%20Mongoose-emerald600)
-![Alerts](https://img.shields.io/badge/Alerts-Sonner%20Toast-rose500)
+## Run it
 
----
-
-## ✨ Features
-
-- 🚕 **Multi-Tier Cab Fleet Selection**:
-  - **Glide Compact (Economy)**: Everyday affordable city rides.
-  - **Glide Comfort**: Premium sedans with top-rated drivers.
-  - **Executive SUV (Premium)**: Luxury black-car fleet for groups & extra luggage.
-  - **Green Zero-EV**: 100% electric Tesla & Ioniq zero-emission fleet.
-
-- ⏰ **Interactive Slot Scheduler**:
-  - Pick pickup date & browse 1-hour time slots across Morning, Afternoon, Evening, and Night.
-  - Real-time slot status indicators (**Available**, **Selected**, **Booked**).
-
-- 🔔 **Real-Time Slot Conflict & "This slot is not available" Toast**:
-  - If a user tries to book or select an already occupied time slot, the system immediately triggers a polished Toast Notification:
-    > **❌ "This slot is not available"**  
-    > *The slot for this vehicle on the selected date is already reserved. Please choose another time.*
-  - Dedicated interactive demo buttons to test the alert instantly.
-
-- 🍃 **MongoDB & In-Memory Fallback Engine**:
-  - Full **Mongoose Schema** with compound indexes (`date`, `timeSlot`, `rideType`, `status`) to avoid race conditions.
-  - Zero-config fallback to an in-memory database if `MONGODB_URI` is not supplied, allowing instant demo execution anywhere.
-
-- 🎨 **Minimalist Light UI Theme**:
-  - Clean slate backgrounds (`#f8fafc`), crisp typography, subtle borders, accessible contrast, and responsive layout.
-
-- 📋 **Live Reservations Dashboard**:
-  - View all scheduled rides with passenger information, routes, fares, and one-click cancellation.
-
----
-
-## 🚀 Quick Start
-
-### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/Rakshi2609/demo.git
-cd demo
 npm install
+npm run dev      # http://localhost:3000
+npm run build && npm run start   # production
 ```
 
-### 2. Configure MongoDB (Optional)
-Copy `.env.example` to `.env.local`:
-```bash
-cp .env.example .env.local
-```
-Add your MongoDB connection string in `.env.local`:
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/cab_booking?retryWrites=true&w=majority
-```
-*(If omitted, the app automatically runs in In-Memory Demo Mode with pre-seeded occupied slots).*
+## Everything lives in one config file
 
-### 3. Run Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+All business content — name, phone, WhatsApp, address, hours, services, prices,
+reviews, gallery, before/after — is in **`src/data/salon.ts`**. Change it there
+and it updates across the whole site. Nothing business-specific is hardcoded in
+components.
 
----
+Comments in that file mark each value:
 
-## 📡 API Endpoints
+- `[VERIFIED]` — confirmed from the salon's public Instagram / web presence
+- `[DEMO]` — placeholder for the demo; safe to replace
+- `[CONFIRM]` — plausible, but confirm with the salon owner
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/bookings` | Fetch all bookings & booked slots for a date/vehicle |
-| `POST` | `/api/bookings` | Schedule a new cab (returns `409 Conflict` if slot unavailable) |
-| `DELETE` | `/api/bookings/[id]` | Cancel an existing reservation |
-| `POST` | `/api/seed` | Reset and re-seed demo bookings |
+### Common edits
 
----
+| To change… | Edit |
+| --- | --- |
+| Phone / WhatsApp number | `salon.phonePrimary`, `salon.whatsapp` in `src/data/salon.ts` |
+| Address / hours | `salon.address`, `salon.hours` |
+| Services & prices | `services[]`, `pricing[]` |
+| Turn on real prices (hides the "demo price" note) | set `PRICING_IS_VERIFIED = true` |
+| Reviews | `reviews[]` |
+| Photos | replace files in `public/images/` keeping the same names |
 
-## 🧪 Testing the "Slot Unavailable" Toast
+## About the images
 
-1. In the booking form, select **Today** and **Glide Compact**.
-2. Click on the booked **09:00 AM - 10:00 AM** slot or click the **"Test 'Slot Unavailable' Toast"** button.
-3. Observe the immediate toast alert: `❌ This slot is not available`.
+The salon's Instagram media could not be downloaded (Instagram blocks anonymous
+access), so **all photos in `public/images/` are demo placeholders** from
+Unsplash (free for commercial use, no attribution). They are optimized WebP
+(≈2.4 MB total). To use the salon's real photos, drop them into
+`public/images/` with the same file names — no code changes needed.
 
----
+## What's verified vs. demo
 
-## 📄 License
-MIT
-# demo
+- **Verified:** name, unisex + academy, "since 2017", Pandri address, both phone
+  numbers, Instagram handle & follower count, premium brands, new Surana branch.
+- **Demo / to confirm:** prices, opening hours, testimonials, and all photos.
+  No Google rating or fake statistics are shown anywhere.
+
+## Sections
+
+Header (sticky, mobile hamburger) · Hero · Services (filterable) · Before/After
+(drag slider) · Gallery (lightbox) · Reviews · Pricing · About · Booking
+(form → WhatsApp) · Instagram · Contact (map, directions, call) · Footer +
+floating WhatsApp button.
