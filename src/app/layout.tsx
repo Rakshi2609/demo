@@ -5,6 +5,7 @@ import "./globals.css";
 import { salon } from "@/data/salon";
 import { fullAddress } from "@/lib/utils";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import Splash from "@/components/Splash";
 
 // Premium type pairing: high-contrast fashion serif for display,
 // refined geometric sans for body and UI labels.
@@ -99,6 +100,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <Splash />
         {children}
         <FloatingWhatsApp />
         <Toaster position="top-center" richColors closeButton />
