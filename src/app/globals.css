@@ -16,8 +16,8 @@
   --color-line: #e6ddce; /* hairline borders */
 
   /* Fonts (wired to next/font variables in layout.tsx) */
-  --font-display: var(--font-cormorant), Georgia, serif;
-  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
 
   /* Radii */
   --radius-xl2: 1.5rem;
@@ -41,8 +41,15 @@ body {
   background-color: var(--color-cream);
   color: var(--color-ink);
   font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Playfair is high-contrast; tighten display tracking for an elegant feel */
+.font-display {
+  letter-spacing: -0.015em;
 }
 
 /* Respect reduced-motion for all animation */

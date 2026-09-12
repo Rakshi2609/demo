@@ -1,21 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Playfair_Display, Jost } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { salon } from "@/data/salon";
 import { fullAddress } from "@/lib/utils";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
-const cormorant = Cormorant_Garamond({
+// Premium type pairing: high-contrast fashion serif for display,
+// refined geometric sans for body and UI labels.
+const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-cormorant",
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
-const inter = Inter({
+const jost = Jost({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-jost",
   display: "swap",
 });
 
@@ -90,7 +94,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${cormorant.variable} ${inter.variable} antialiased`}>
+      <body className={`${playfair.variable} ${jost.variable} antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
